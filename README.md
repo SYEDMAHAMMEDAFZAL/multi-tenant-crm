@@ -6,11 +6,11 @@ A production-ready CRM database architecture and web platform powered by **Postg
 
 ## Deliverables & Documentation
 
-- **[CRM_Architecture_Documentation.pdf](CRM_Architecture_Documentation.pdf)** — Official 26-page printable PDF specification report (includes ERD, Data Dictionary, and technical design justifications).
-- **[DOCUMENTATION.md](DOCUMENTATION.md)** — Comprehensive architecture report in Markdown format.
-- **[Interactive Documentation Viewer](http://localhost:3000/docs.html)** (`public/docs.html`) — In-app viewer with live Mermaid rendering and 1-click print-to-PDF.
-- **[schema.sql](schema.sql)** — Production-grade PostgreSQL database schema DDL.
-- **[seed.sql](seed.sql)** — Sample seed data for multi-tenant organizations, accounts, contacts, pipelines, and deals.
+- 🌐 **[Live Documentation Website (GitHub Pages)](https://syedmahammedafzal.github.io/multi-tenant-crm/)** — Live online architecture whitepaper with interactive Mermaid ERD and 1-click PDF download.
+- 📄 **[CRM_Architecture_Documentation.pdf](CRM_Architecture_Documentation.pdf)** — Official 23-page high-contrast PDF specification report.
+- 📝 **[DOCUMENTATION.md](DOCUMENTATION.md)** — Comprehensive architecture report in Markdown format.
+- 💻 **[schema.sql](schema.sql)** — Production-grade PostgreSQL database schema DDL.
+- 🌱 **[seed.sql](seed.sql)** — Sample seed data for multi-tenant organizations, accounts, contacts, pipelines, and deals.
 
 ---
 
