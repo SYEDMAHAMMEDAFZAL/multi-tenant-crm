@@ -379,6 +379,15 @@ app.post('/api/contacts', async (req, res) => {
   }
 });
 
+// 10. Architecture Documentation endpoint
+app.get('/api/documentation', (req, res) => {
+  const docPath = path.join(__dirname, 'DOCUMENTATION.md');
+  fs.readFile(docPath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read documentation file' });
+    res.type('text/markdown').send(data);
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 CRM Web Dashboard running at http://localhost:${PORT}`);
 });
