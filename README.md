@@ -2,15 +2,19 @@
 
 A production-ready CRM database architecture and web platform powered by **PostgreSQL 17** with native **Row-Level Security (RLS)**, **UUIDv7** time-ordered indexing, and strict multi-tenant isolation.
 
+![OmniCRM Dashboard Preview](docs/dashboard_preview.png)
+
 ---
 
-## Deliverables & Documentation
+## Deliverables & Quick Links
 
-- 🌐 **[Live Documentation Website (GitHub Pages)](https://syedmahammedafzal.github.io/multi-tenant-crm/)** — Live online architecture whitepaper with interactive Mermaid ERD and 1-click PDF download.
+- 🚀 **[Live Interactive Web Application](https://syedmahammedafzal.github.io/multi-tenant-crm/)** — Full-stack Kanban deals board with live multi-tenant RLS switching.
+- 🌐 **[Live Architecture Documentation](https://syedmahammedafzal.github.io/multi-tenant-crm/docs.html)** — 23-page online specification with interactive Mermaid ERD and 1-click PDF download.
 - 📄 **[CRM_Architecture_Documentation.pdf](CRM_Architecture_Documentation.pdf)** — Official 23-page high-contrast PDF specification report.
 - 📝 **[DOCUMENTATION.md](DOCUMENTATION.md)** — Comprehensive architecture report in Markdown format.
-- 💻 **[schema.sql](schema.sql)** — Production-grade PostgreSQL database schema DDL.
+- 💻 **[schema.sql](schema.sql)** — Production-grade PostgreSQL database schema DDL (30 tables).
 - 🌱 **[seed.sql](seed.sql)** — Sample seed data for multi-tenant organizations, accounts, contacts, pipelines, and deals.
+- 🔍 **[verify.sql](verify.sql)** — Ready-to-run SQL verification script for pgAdmin 4 / psql.
 
 ---
 
