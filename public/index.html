@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniCRM — Multi-Tenant Enterprise Platform</title>
+  <meta name="description" content="Next-generation multi-tenant CRM powered by PostgreSQL 17 with Row-Level Security, real-time pipeline management, accounts, and contact intelligence.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="glow-orb orb-1" aria-hidden="true"></div>
+  <div class="glow-orb orb-2" aria-hidden="true"></div>
+
+  <!-- Main App Shell -->
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">OmniCRM</span>
+          <span class="brand-badge">Multi-Tenant RLS</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu" aria-label="Main Navigation">
+        <button class="nav-item active" data-tab="deals" id="nav-deals-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg>
+          <span>Deals Pipeline</span>
+        </button>
+        <button class="nav-item" data-tab="accounts" id="nav-accounts-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M10 11h2M10 15h2M14 11h2M14 15h2M18 11h2M18 15h2M9 3h6v4H9z"/></svg>
+          <span>Accounts</span>
+        </button>
+        <button class="nav-item" data-tab="contacts" id="nav-contacts-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Contacts</span>
+        </button>
+        <button class="nav-item" data-tab="analytics" id="nav-analytics-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Insights & KPIs</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="db-status-badge" id="db-status-indicator">
+          <span class="status-dot disconnected"></span>
+          <span class="status-label" id="db-status-text">Checking Database...</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="open-config-btn" title="Configure Database Connection">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          DB Settings
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="page-heading">Pipeline & Deals</h1>
+          <p class="subtitle">Live PostgreSQL 17 multi-tenant session with strict Row-Level Security</p>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Tenant Context Selector -->
+          <div class="tenant-selector-box">
+            <label for="tenant-select" class="selector-label">Tenant Scope (RLS):</label>
+            <select id="tenant-select" class="form-select">
+              <option value="a0000000-0000-7000-8000-000000000001">Acme Corporation (Pro)</option>
+            </select>
+          </div>
+
+          <!-- Quick Action Button -->
+          <button class="btn btn-primary" id="btn-create-action">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span id="btn-create-action-text">New Deal</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- KPI Summary Cards -->
+      <section class="kpi-grid" aria-label="Key Performance Indicators">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Total Pipeline</span>
+            <span class="kpi-icon indigo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" id="kpi-pipeline-val">$0</div>
+          <div class="kpi-sub" id="kpi-pipeline-sub">0 Active Deals</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Won Revenue</span>
+            <span class="kpi-icon emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" id="kpi-won-val">$0</div>
+          <div class="kpi-sub" id="kpi-won-sub">0 Deals Closed</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Managed Accounts</span>
+            <span class="kpi-icon blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M10 11h2M10 15h2M14 11h2M14 15h2M18 11h2M18 15h2M9 3h6v4H9z"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" id="kpi-accounts-val">0</div>
+          <div class="kpi-sub">Enterprise Accounts</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Active Contacts</span>
+            <span class="kpi-icon purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" id="kpi-contacts-val">0</div>
+          <div class="kpi-sub">Decision Makers</div>
+        </div>
+      </section>
+
+      <!-- View 1: Deals Kanban Board -->
+      <section class="tab-pane active" id="tab-deals">
+        <div class="kanban-wrapper">
+          <div class="kanban-board" id="kanban-board">
+            <div class="kanban-loading">Loading pipeline stages from PostgreSQL...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 2: Accounts Table -->
+      <section class="tab-pane" id="tab-accounts">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="search-box">
+              <input type="text" id="accounts-search" class="form-input" placeholder="Search accounts by name or domain...">
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-new-account">
+              + New Account
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="accounts-table">
+              <thead>
+                <tr>
+                  <th>Company Name</th>
+                  <th>Domain</th>
+                  <th>Industry</th>
+                  <th>Lifecycle</th>
+                  <th>Annual Revenue</th>
+                  <th>Contacts</th>
+                  <th>Deals Pipeline</th>
+                </tr>
+              </thead>
+              <tbody id="accounts-tbody">
+                <tr><td colspan="7" class="text-center">Loading accounts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 3: Contacts Directory -->
+      <section class="tab-pane" id="tab-contacts">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="search-box">
+              <input type="text" id="contacts-search" class="form-input" placeholder="Search contacts by name, email, or company...">
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-new-contact">
+              + New Contact
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="contacts-table">
+              <thead>
+                <tr>
+                  <th>Contact</th>
+                  <th>Title</th>
+                  <th>Account</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Primary</th>
+                </tr>
+              </thead>
+              <tbody id="contacts-tbody">
+                <tr><td colspan="6" class="text-center">Loading contacts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 4: Analytics Overview -->
+      <section class="tab-pane" id="tab-analytics">
+        <div class="analytics-grid">
+          <div class="panel-card">
+            <h2 class="panel-title">PostgreSQL Architecture & Security Overview</h2>
+            <div class="arch-pills">
+              <span class="badge blue">PostgreSQL 17.11</span>
+              <span class="badge indigo">Shared Database / Shared Schema</span>
+              <span class="badge emerald">Row-Level Security (RLS) Active</span>
+              <span class="badge purple">UUIDv7 Pure SQL Generator</span>
+            </div>
+            <p class="arch-desc">
+              Every query made by this dashboard runs through an isolated transaction with:
+              <br><code>SELECT set_config('app.current_tenant_id', '&lt;tenant_id&gt;', true)</code>.
+              Cross-tenant data leakage is cryptographically prevented at the engine level.
+            </p>
+          </div>
+
+          <div class="panel-card">
+            <h2 class="panel-title">Active Database Tables Schema</h2>
+            <div class="table-list-pills" id="table-pills-list">
+              <span class="table-tag">accounts</span>
+              <span class="table-tag">contacts</span>
+              <span class="table-tag">deals</span>
+              <span class="table-tag">deal_stage_history</span>
+              <span class="table-tag">pipelines</span>
+              <span class="table-tag">pipeline_stages</span>
+              <span class="table-tag">products</span>
+              <span class="table-tag">price_books</span>
+              <span class="table-tag">quotes</span>
+              <span class="table-tag">activities</span>
+              <span class="table-tag">audit_logs</span>
+              <span class="table-tag">notifications</span>
+              <span class="table-tag">tenants</span>
+              <span class="table-tag">subscription_plans</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ================= DIALOGS (MODALS) ================= -->
+
+  <!-- Modal: Configure Database Connection -->
+  <dialog id="modal-db-config" closedby="any" aria-labelledby="dialog-db-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="dialog-db-title">Connect PostgreSQL Database</h2>
+        <button class="dialog-close-btn" type="button" aria-label="Close" onclick="document.getElementById('modal-db-config').close()">&times;</button>
+      </div>
+      <p class="dialog-subtitle">Configure your local PostgreSQL connection password.</p>
+      <form id="form-db-config" class="dialog-form">
+        <div class="form-group">
+          <label for="cfg-host">Host</label>
+          <input type="text" id="cfg-host" class="form-input" value="localhost" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cfg-port">Port</label>
+            <input type="number" id="cfg-port" class="form-input" value="5432" required>
+          </div>
+          <div class="form-group">
+            <label for="cfg-db">Database</label>
+            <input type="text" id="cfg-db" class="form-input" value="crm_db" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cfg-user">Username</label>
+            <input type="text" id="cfg-user" class="form-input" value="postgres" required>
+          </div>
+          <div class="form-group">
+            <label for="cfg-password">Password (from installation)</label>
+            <input type="password" id="cfg-password" class="form-input" placeholder="Enter postgres password" required autofocus>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-db-config').close()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-db">Connect & Save</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Add New Deal -->
+  <dialog id="modal-deal" closedby="any" aria-labelledby="dialog-deal-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="dialog-deal-title">Create New Deal</h2>
+        <button class="dialog-close-btn" type="button" aria-label="Close" onclick="document.getElementById('modal-deal').close()">&times;</button>
+      </div>
+      <form id="form-new-deal" class="dialog-form">
+        <div class="form-group">
+          <label for="deal-title">Deal Title *</label>
+          <input type="text" id="deal-title" class="form-input" placeholder="e.g. Q4 Cloud Modernization" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="deal-amount">Value ($) *</label>
+            <input type="number" id="deal-amount" class="form-input" placeholder="50000" min="0" step="100" required>
+          </div>
+          <div class="form-group">
+            <label for="deal-stage">Pipeline Stage *</label>
+            <select id="deal-stage" class="form-select" required>
+              <option value="">Select Stage...</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="deal-account">Company / Account *</label>
+            <select id="deal-account" class="form-select" required>
+              <option value="">Select Account...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="deal-contact">Primary Contact</label>
+            <select id="deal-contact" class="form-select">
+              <option value="">Select Contact (Optional)...</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="deal-close-date">Expected Close Date</label>
+          <input type="date" id="deal-close-date" class="form-input">
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-deal').close()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Deal</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Add New Account -->
+  <dialog id="modal-account" closedby="any" aria-labelledby="dialog-account-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="dialog-account-title">Add Company Account</h2>
+        <button class="dialog-close-btn" type="button" aria-label="Close" onclick="document.getElementById('modal-account').close()">&times;</button>
+      </div>
+      <form id="form-new-account" class="dialog-form">
+        <div class="form-group">
+          <label for="acc-name">Company Name *</label>
+          <input type="text" id="acc-name" class="form-input" placeholder="e.g. Cyberdyne Systems" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="acc-domain">Website / Domain</label>
+            <input type="text" id="acc-domain" class="form-input" placeholder="cyberdyne.com">
+          </div>
+          <div class="form-group">
+            <label for="acc-industry">Industry</label>
+            <input type="text" id="acc-industry" class="form-input" placeholder="Artificial Intelligence">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="acc-revenue">Annual Revenue ($)</label>
+            <input type="number" id="acc-revenue" class="form-input" placeholder="2500000" min="0">
+          </div>
+          <div class="form-group">
+            <label for="acc-stage">Lifecycle Stage</label>
+            <select id="acc-stage" class="form-select">
+              <option value="lead">Lead</option>
+              <option value="prospect" selected>Prospect</option>
+              <option value="customer">Customer</option>
+              <option value="partner">Partner</option>
+            </select>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-account').close()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Account</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Add New Contact -->
+  <dialog id="modal-contact" closedby="any" aria-labelledby="dialog-contact-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="dialog-contact-title">Add New Contact</h2>
+        <button class="dialog-close-btn" type="button" aria-label="Close" onclick="document.getElementById('modal-contact').close()">&times;</button>
+      </div>
+      <form id="form-new-contact" class="dialog-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cnt-first">First Name *</label>
+            <input type="text" id="cnt-first" class="form-input" placeholder="Miles" required>
+          </div>
+          <div class="form-group">
+            <label for="cnt-last">Last Name *</label>
+            <input type="text" id="cnt-last" class="form-input" placeholder="Dyson" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cnt-email">Work Email *</label>
+          <input type="email" id="cnt-email" class="form-input" placeholder="miles@cyberdyne.com" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cnt-phone">Phone Number</label>
+            <input type="tel" id="cnt-phone" class="form-input" placeholder="+1-555-0144">
+          </div>
+          <div class="form-group">
+            <label for="cnt-title">Job Title</label>
+            <input type="text" id="cnt-title" class="form-input" placeholder="Lead Architect">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cnt-account">Associated Account</label>
+          <select id="cnt-account" class="form-select">
+            <option value="">Select Account...</option>
+          </select>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-contact').close()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Contact</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
