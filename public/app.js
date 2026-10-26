@@ -8,6 +8,135 @@ let cachedStages = [];
 let cachedAccounts = [];
 let cachedContacts = [];
 let isConnected = false;
+let isDemoMode = false;
+
+// Pre-seeded multi-tenant demo dataset (used seamlessly on static hosts like GitHub Pages)
+const demoDB = {
+  tenants: [
+    { id: 'a0000000-0000-7000-8000-000000000001', name: 'Acme Corporation', current_plan_id: 'enterprise' },
+    { id: 'a0000000-0000-7000-8000-000000000002', name: 'Globex Systems', current_plan_id: 'pro' }
+  ],
+  stages: [
+    { id: 's0000000-0000-7000-8000-000000000001', name: 'Discovery', display_order: 1 },
+    { id: 's0000000-0000-7000-8000-000000000002', name: 'Proposal Sent', display_order: 2 },
+    { id: 's0000000-0000-7000-8000-000000000003', name: 'Negotiation', display_order: 3 },
+    { id: 's0000000-0000-7000-8000-000000000004', name: 'Closed Won', display_order: 4, is_closed_won: true }
+  ],
+  accounts: [
+    { id: 'acc-1', tenant_id: 'a0000000-0000-7000-8000-000000000001', name: 'Stark Industries', domain: 'starkindustries.com', industry: 'Defense & Technology', annual_revenue: '5000000.00', lifecycle_stage: 'customer' },
+    { id: 'acc-2', tenant_id: 'a0000000-0000-7000-8000-000000000001', name: 'Wayne Enterprises', domain: 'waynecorp.com', industry: 'Aerospace & Defense', annual_revenue: '8500000.00', lifecycle_stage: 'customer' },
+    { id: 'acc-3', tenant_id: 'a0000000-0000-7000-8000-000000000001', name: 'Cyberdyne Systems', domain: 'cyberdyne.com', industry: 'Robotics & AI', annual_revenue: '2400000.00', lifecycle_stage: 'prospect' },
+    { id: 'acc-4', tenant_id: 'a0000000-0000-7000-8000-000000000002', name: 'Initech Global', domain: 'initech.com', industry: 'Enterprise Software', annual_revenue: '1200000.00', lifecycle_stage: 'customer' }
+  ],
+  contacts: [
+    { id: 'con-1', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-1', account_name: 'Stark Industries', first_name: 'Tony', last_name: 'Stark', email: 'tony@stark.com', phone: '+1-212-555-0199', title: 'CEO & Principal Engineer', is_primary_contact: true },
+    { id: 'con-2', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-2', account_name: 'Wayne Enterprises', first_name: 'Bruce', last_name: 'Wayne', email: 'bruce@wayne.com', phone: '+1-212-555-0188', title: 'Managing Director & Chairman', is_primary_contact: true },
+    { id: 'con-3', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-1', account_name: 'Stark Industries', first_name: 'Pepper', last_name: 'Potts', email: 'pepper@stark.com', phone: '+1-212-555-0198', title: 'Chief Operating Officer', is_primary_contact: false }
+  ],
+  deals: [
+    { id: 'deal-1', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-1', account_name: 'Stark Industries', title: 'Arc Reactor Cloud Infrastructure', amount: '150000.00', stage_id: 's0000000-0000-7000-8000-000000000003', contact_name: 'Tony Stark' },
+    { id: 'deal-2', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-2', account_name: 'Wayne Enterprises', title: 'Batmobile AI Defense Fleet Retainer', amount: '75000.00', stage_id: 's0000000-0000-7000-8000-000000000002', contact_name: 'Bruce Wayne' },
+    { id: 'deal-3', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-3', account_name: 'Cyberdyne Systems', title: 'Neural Net Enterprise Licensing', amount: '320000.00', stage_id: 's0000000-0000-7000-8000-000000000001', contact_name: 'Dr. Miles Dyson' },
+    { id: 'deal-4', tenant_id: 'a0000000-0000-7000-8000-000000000001', account_id: 'acc-1', account_name: 'Stark Industries', title: 'Quantum Sensors Maintenance', amount: '45000.00', stage_id: 's0000000-0000-7000-8000-000000000004', contact_name: 'Pepper Potts' }
+  ]
+};
+
+// Seamless API Interceptor: routes to real Node backend if available, or in-memory simulated RLS on GitHub Pages
+const nativeFetch = window.fetch.bind(window);
+window.fetch = async function(url, options = {}) {
+  if (!isDemoMode && typeof url === 'string' && url.startsWith('/api/')) {
+    try {
+      const res = await nativeFetch(url, options);
+      if (res.ok || res.status === 400 || res.status === 500) return res;
+    } catch (e) {
+      // Backend not running (e.g. GitHub Pages) -> Fall through to demo mode
+    }
+  }
+
+  if (typeof url === 'string' && url.startsWith('/api/')) {
+    isDemoMode = true;
+    const method = (options.method || 'GET').toUpperCase();
+    const headers = options.headers || {};
+    const tenantId = headers['x-tenant-id'] || currentTenantId;
+
+    const mockResponse = (data, status = 200) => new Response(JSON.stringify(data), {
+      status,
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (url === '/api/status') {
+      return mockResponse({ connected: true, database: 'crm_db (Cloud Demo)', user: 'postgres', host: 'github-pages', port: 5432 });
+    }
+    if (url === '/api/tenants') {
+      return mockResponse(demoDB.tenants);
+    }
+    if (url === '/api/stats') {
+      const tDeals = demoDB.deals.filter(d => d.tenant_id === tenantId);
+      const wonDeals = tDeals.filter(d => d.stage_id === 's0000000-0000-7000-8000-000000000004');
+      const openDeals = tDeals.filter(d => d.stage_id !== 's0000000-0000-7000-8000-000000000004');
+      return mockResponse({
+        open_count: openDeals.length,
+        total_pipeline_value: openDeals.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0),
+        won_count: wonDeals.length,
+        won_value: wonDeals.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0),
+        total_accounts: demoDB.accounts.filter(a => a.tenant_id === tenantId).length,
+        total_contacts: demoDB.contacts.filter(c => c.tenant_id === tenantId).length
+      });
+    }
+    if (url === '/api/pipeline') {
+      return mockResponse({
+        stages: demoDB.stages,
+        deals: demoDB.deals.filter(d => d.tenant_id === tenantId)
+      });
+    }
+    if (url.startsWith('/api/accounts')) {
+      if (method === 'POST') {
+        const body = JSON.parse(options.body || '{}');
+        const newAcc = { id: 'acc-' + Date.now(), tenant_id: tenantId, ...body };
+        demoDB.accounts.unshift(newAcc);
+        return mockResponse(newAcc, 201);
+      }
+      return mockResponse(demoDB.accounts.filter(a => a.tenant_id === tenantId));
+    }
+    if (url.startsWith('/api/contacts')) {
+      if (method === 'POST') {
+        const body = JSON.parse(options.body || '{}');
+        const acc = demoDB.accounts.find(a => a.id === body.account_id);
+        const newCon = { id: 'con-' + Date.now(), tenant_id: tenantId, account_name: acc ? acc.name : '', ...body };
+        demoDB.contacts.unshift(newCon);
+        return mockResponse(newCon, 201);
+      }
+      return mockResponse(demoDB.contacts.filter(c => c.tenant_id === tenantId));
+    }
+    if (url.startsWith('/api/deals')) {
+      if (method === 'PUT' && url.includes('/stage')) {
+        const parts = url.split('/');
+        const dealId = parts[3];
+        const body = JSON.parse(options.body || '{}');
+        const deal = demoDB.deals.find(d => d.id === dealId);
+        if (deal) deal.stage_id = body.stage_id;
+        return mockResponse({ success: true, deal });
+      }
+      if (method === 'POST') {
+        const body = JSON.parse(options.body || '{}');
+        const acc = demoDB.accounts.find(a => a.id === body.account_id);
+        const con = demoDB.contacts.find(c => c.id === body.primary_contact_id);
+        const newDeal = {
+          id: 'deal-' + Date.now(),
+          tenant_id: tenantId,
+          account_name: acc ? acc.name : 'Unknown Account',
+          contact_name: con ? `${con.first_name} ${con.last_name}` : '',
+          ...body
+        };
+        demoDB.deals.unshift(newDeal);
+        return mockResponse(newDeal, 201);
+      }
+      return mockResponse(demoDB.deals.filter(d => d.tenant_id === tenantId));
+    }
+  }
+
+  return nativeFetch(url, options);
+};
 
 // DOM Elements
 const tenantSelect = document.getElementById('tenant-select');

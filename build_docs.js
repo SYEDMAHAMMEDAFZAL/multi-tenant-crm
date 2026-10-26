@@ -8,9 +8,8 @@ const markdownContent = fs.readFileSync(docPath, 'utf8');
 const safeMarkdown = markdownContent.replace(/<\/script>/gi, '<\\/script>');
 
 function generateHtml(options = {}) {
-  const isDocsFolder = options.isDocsFolder || false;
-  const homeLink = isDocsFolder ? '../' : '/';
-  const pdfLink = isDocsFolder ? './CRM_Architecture_Documentation.pdf' : '/CRM_Architecture_Documentation.pdf';
+  const homeLink = './index.html';
+  const pdfLink = './CRM_Architecture_Documentation.pdf';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -507,7 +506,8 @@ function generateHtml(options = {}) {
 }
 
 // Write to public/docs.html (for local Node server)
-fs.writeFileSync(path.join(__dirname, 'public', 'docs.html'), generateHtml({ isDocsFolder: false }), 'utf8');
+const docsHtml = generateHtml({ isDocsFolder: false });
+fs.writeFileSync(path.join(__dirname, 'public', 'docs.html'), docsHtml, 'utf8');
 console.log('✅ Generated public/docs.html successfully');
 
 // Ensure docs/ folder exists for GitHub Pages
@@ -516,15 +516,21 @@ if (!fs.existsSync(docsDir)) {
   fs.mkdirSync(docsDir, { recursive: true });
 }
 
-// Write to docs/index.html (for GitHub Pages deployment)
-fs.writeFileSync(path.join(docsDir, 'index.html'), generateHtml({ isDocsFolder: true }), 'utf8');
-console.log('✅ Generated docs/index.html for GitHub Pages successfully');
+// 1. Copy Full CRM Dashboard to docs/ (so https://<user>.github.io/<repo>/ is the live interactive app!)
+fs.copyFileSync(path.join(__dirname, 'public', 'index.html'), path.join(docsDir, 'index.html'));
+fs.copyFileSync(path.join(__dirname, 'public', 'style.css'), path.join(docsDir, 'style.css'));
+fs.copyFileSync(path.join(__dirname, 'public', 'app.js'), path.join(docsDir, 'app.js'));
+console.log('✅ Deployed Live CRM App (index.html, style.css, app.js) to docs/ for GitHub Pages');
 
-// Copy PDF and schema assets into docs/
+// 2. Write Architecture Documentation to docs/docs.html
+fs.writeFileSync(path.join(docsDir, 'docs.html'), docsHtml, 'utf8');
+console.log('✅ Generated docs/docs.html successfully');
+
+// 3. Copy PDF, raw markdown, and SQL schema assets into docs/
 fs.copyFileSync(path.join(__dirname, 'DOCUMENTATION.md'), path.join(docsDir, 'DOCUMENTATION.md'));
 fs.copyFileSync(path.join(__dirname, 'schema.sql'), path.join(docsDir, 'schema.sql'));
 fs.copyFileSync(path.join(__dirname, 'seed.sql'), path.join(docsDir, 'seed.sql'));
 if (fs.existsSync(path.join(__dirname, 'CRM_Architecture_Documentation.pdf'))) {
   fs.copyFileSync(path.join(__dirname, 'CRM_Architecture_Documentation.pdf'), path.join(docsDir, 'CRM_Architecture_Documentation.pdf'));
 }
-console.log('✅ Synced documentation assets to docs/ folder for GitHub Pages');
+console.log('✅ Synced documentation and schema assets to docs/');
