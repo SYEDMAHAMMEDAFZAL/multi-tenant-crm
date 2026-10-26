@@ -6,7 +6,9 @@ A production-ready CRM database architecture and web platform powered by **Postg
 
 ## Deliverables & Documentation
 
-- **[DOCUMENTATION.md](DOCUMENTATION.md)** — Comprehensive architecture report including Mermaid ER diagram, 26-entity Data Dictionary, and design decisions.
+- **[CRM_Architecture_Documentation.pdf](CRM_Architecture_Documentation.pdf)** — Official 26-page printable PDF specification report (includes ERD, Data Dictionary, and technical design justifications).
+- **[DOCUMENTATION.md](DOCUMENTATION.md)** — Comprehensive architecture report in Markdown format.
+- **[Interactive Documentation Viewer](http://localhost:3000/docs.html)** (`public/docs.html`) — In-app viewer with live Mermaid rendering and 1-click print-to-PDF.
 - **[schema.sql](schema.sql)** — Production-grade PostgreSQL database schema DDL.
 - **[seed.sql](seed.sql)** — Sample seed data for multi-tenant organizations, accounts, contacts, pipelines, and deals.
 
